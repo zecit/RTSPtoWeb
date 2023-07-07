@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"net"
+	"strconv"
 	"sync"
 	"time"
 
@@ -86,6 +88,46 @@ type Token struct {
 type StreamST struct {
 	Name     string               `json:"name,omitempty" groups:"api,config"`
 	Channels map[string]ChannelST `json:"channels,omitempty" groups:"api,config"`
+}
+
+func (s StreamST) MarshalJSON() ([]byte, error) {
+	channels := make([]ChannelST, 0, len(s.Channels))
+	for _, channel := range s.Channels {
+		channels = append(channels, channel)
+	}
+	return json.Marshal(struct {
+		Name     string      `json:"name,omitempty" groups:"api,config"`
+		Channels []ChannelST `json:"channels,omitempty" groups:"api,config"`
+	}{
+		Name:     s.Name,
+		Channels: channels,
+	})
+}
+
+func (s *StreamST) UnmarshalJSON(data []byte) error {
+	var objmap map[string]*json.RawMessage
+	if err := json.Unmarshal(data, &objmap); err != nil {
+		return err
+	}
+
+	var name string
+	if err := json.Unmarshal(*objmap["name"], &name); err != nil {
+		return err
+	}
+	s.Name = name
+
+	var channels []ChannelST
+	if err := json.Unmarshal(*objmap["channels"], &channels); err != nil {
+		return err
+	}
+
+	mapChannels := make(map[string]ChannelST)
+	for i, val := range channels {
+		mapChannels[strconv.Itoa(i)] = val
+	}
+	s.Channels = mapChannels
+
+	return nil
 }
 
 type ChannelST struct {
