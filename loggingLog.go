@@ -10,7 +10,7 @@ var log = logrus.New()
 
 func init() {
 	//TODO: next add write to file
-	if !debug {
+	if !debugFlag {
 		log.SetOutput(ioutil.Discard)
 	}
 	log.SetFormatter(&logrus.TextFormatter{

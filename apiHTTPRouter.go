@@ -19,11 +19,7 @@ type Message struct {
 // HTTPAPIServer start http server routes
 func HTTPAPIServer() {
 	//Set HTTP API mode
-	log.WithFields(logrus.Fields{
-		"module": "http_server",
-		"func":   "RTSPServer",
-		"call":   "Start",
-	}).Infoln("Server HTTP start")
+	elog.Info(1, "Server HTTP start")
 	var public *gin.Engine
 	if !Storage.ServerHTTPDebug() {
 		gin.SetMode(gin.ReleaseMode)
@@ -144,11 +140,7 @@ func HTTPAPIServer() {
 	}
 	err := public.Run(Storage.ServerHTTPPort())
 	if err != nil {
-		log.WithFields(logrus.Fields{
-			"module": "http_router",
-			"func":   "HTTPAPIServer",
-			"call":   "ServerHTTPPort",
-		}).Fatalln(err.Error())
+		elog.Error(1, err.Error())
 		os.Exit(1)
 	}
 

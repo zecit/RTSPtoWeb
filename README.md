@@ -255,3 +255,7 @@ Examples of working with video on golang
 - [RTSPtoHLSLL](https://github.com/deepch/RTSPtoHLSLL)
 
 [![paypal.me/AndreySemochkin](https://ionicabizau.github.io/badges/paypal.svg)](https://www.paypal.me/AndreySemochkin) - You can make one-time donations via PayPal. I'll probably buy a ~~coffee~~ tea. :tea:
+
+
+# Build pour windows
+GOOS=windows GOARCH=amd64 go build -a -o RTSPtoWeb.exe

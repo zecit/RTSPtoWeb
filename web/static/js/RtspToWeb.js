@@ -87,11 +87,7 @@ var rtspPlayer={
   },
   playWebrtc:function(){
     var _this=this;
-    this.webrtc=new RTCPeerConnection({
-      iceServers: [{
-        urls: ["stun:stun.l.google.com:19302"]
-      }]
-    });
+    this.webrtc=new RTCPeerConnection();
     this.webrtc.onnegotiationneeded = this.handleNegotiationNeeded;
     this.webrtc.ontrack = function(event) {
       console.log(event.streams.length + ' track is delivered');

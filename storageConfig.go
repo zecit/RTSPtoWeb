@@ -17,12 +17,12 @@ import (
 )
 
 // Command line flag global variables
-var debug bool
+var debugFlag bool
 var configFile string
 
-//NewStreamCore do load config file
+// NewStreamCore do load config file
 func NewStreamCore() *StorageST {
-	flag.BoolVar(&debug, "debug", true, "set debug mode")
+	flag.BoolVar(&debugFlag, "debug", true, "set debug mode")
 	flag.StringVar(&configFile, "config", "config.json", "config patch (/etc/server/config.json or config.json)")
 	flag.Parse()
 
@@ -45,7 +45,7 @@ func NewStreamCore() *StorageST {
 		}).Errorln(err.Error())
 		os.Exit(1)
 	}
-	debug = tmp.Server.Debug
+	debugFlag = tmp.Server.Debug
 	for i, i2 := range tmp.Streams {
 		for i3, i4 := range i2.Channels {
 			channel := tmp.ChannelDefaults
@@ -69,7 +69,7 @@ func NewStreamCore() *StorageST {
 	return &tmp
 }
 
-//ClientDelete Delete Client
+// ClientDelete Delete Client
 func (obj *StorageST) SaveConfig() error {
 	log.WithFields(logrus.Fields{
 		"module": "config",
