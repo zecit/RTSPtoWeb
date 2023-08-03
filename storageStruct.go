@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"net"
+	"strconv"
 	"sync"
 	"time"
 
@@ -12,20 +14,20 @@ import (
 
 var Storage = NewStreamCore()
 
-//Default stream  type
+// Default stream  type
 const (
 	MSE = iota
 	WEBRTC
 	RTSP
 )
 
-//Default stream status type
+// Default stream status type
 const (
 	OFFLINE = iota
 	ONLINE
 )
 
-//Default stream errors
+// Default stream errors
 var (
 	Success                         = "success"
 	ErrorStreamNotFound             = errors.New("stream not found")
@@ -43,7 +45,7 @@ var (
 	ErrorStreamUnauthorized         = errors.New("stream request unauthorized")
 )
 
-//StorageST main storage struct
+// StorageST main storage struct
 type StorageST struct {
 	mutex           sync.RWMutex
 	Server          ServerST            `json:"server" groups:"api,config"`
@@ -51,7 +53,7 @@ type StorageST struct {
 	ChannelDefaults ChannelST           `json:"channel_defaults,omitempty" groups:"api,config"`
 }
 
-//ServerST server storage section
+// ServerST server storage section
 type ServerST struct {
 	Debug              bool         `json:"debug" groups:"api,config"`
 	LogLevel           logrus.Level `json:"log_level" groups:"api,config"`
@@ -76,16 +78,56 @@ type ServerST struct {
 	WebRTCPortMax      uint16       `json:"webrtc_port_max" groups:"api,config"`
 }
 
-//Token auth
+// Token auth
 type Token struct {
 	Enable  bool   `json:"enable" groups:"api,config"`
 	Backend string `json:"backend" groups:"api,config"`
 }
 
-//ServerST stream storage section
+// ServerST stream storage section
 type StreamST struct {
 	Name     string               `json:"name,omitempty" groups:"api,config"`
 	Channels map[string]ChannelST `json:"channels,omitempty" groups:"api,config"`
+}
+
+func (s StreamST) MarshalJSON() ([]byte, error) {
+	channels := make([]ChannelST, 0, len(s.Channels))
+	for _, channel := range s.Channels {
+		channels = append(channels, channel)
+	}
+	return json.Marshal(struct {
+		Name     string      `json:"name,omitempty" groups:"api,config"`
+		Channels []ChannelST `json:"channels,omitempty" groups:"api,config"`
+	}{
+		Name:     s.Name,
+		Channels: channels,
+	})
+}
+
+func (s *StreamST) UnmarshalJSON(data []byte) error {
+	var objmap map[string]*json.RawMessage
+	if err := json.Unmarshal(data, &objmap); err != nil {
+		return err
+	}
+
+	var name string
+	if err := json.Unmarshal(*objmap["name"], &name); err != nil {
+		return err
+	}
+	s.Name = name
+
+	var channels []ChannelST
+	if err := json.Unmarshal(*objmap["channels"], &channels); err != nil {
+		return err
+	}
+
+	mapChannels := make(map[string]ChannelST)
+	for i, val := range channels {
+		mapChannels[strconv.Itoa(i)] = val
+	}
+	s.Channels = mapChannels
+
+	return nil
 }
 
 type ChannelST struct {
@@ -107,7 +149,7 @@ type ChannelST struct {
 	hlsMuxer           *MuxerHLS `json:"-"`
 }
 
-//ClientST client storage section
+// ClientST client storage section
 type ClientST struct {
 	mode              int
 	signals           chan int
@@ -116,7 +158,7 @@ type ClientST struct {
 	socket            net.Conn
 }
 
-//SegmentOld HLS cache section
+// SegmentOld HLS cache section
 type SegmentOld struct {
 	dur  time.Duration
 	data []*av.Packet

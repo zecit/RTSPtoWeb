@@ -1,9 +1,10 @@
 {
+  "channel_defaults": {},
   "server": {
     "debug": true,
     "http_debug": false,
     "http_demo": true,
-    "http_dir": "web",
+    "http_dir": "C:\\Users\\Julie\\source\\repos\\zecit\\RTSPtoWeb\\web",
     "http_login": "demo",
     "http_password": "demo",
     "http_port": ":8083",
@@ -13,26 +14,45 @@
     "https_cert": "server.crt",
     "https_key": "server.key",
     "https_port": ":443",
-    "ice_servers": ["stun:stun.l.google.com:19302"],
+    "ice_credential": "",
+    "ice_servers": [],
+    "ice_username": "",
     "log_level": "debug",
     "rtsp_port": ":5541",
     "token": {
-      "backend": "http://127.0.0.1/test.php"
+      "backend": "http://127.0.0.1/test.php",
+      "enable": false
     },
-    "defaults": {
-      "audio": true
-    }
+    "webrtc_port_max": 0,
+    "webrtc_port_min": 0
   },
   "streams": {
-    "27aec28e-6181-4753-9acd-0456a75f0289": {
-      "channels": {
-        "0": {
-          "url": "rtmp://171.25.232.10/12d525bc9f014e209c1280bc0d46a87e",
-          "debug": false,
-          "audio": true
+    "292ac530-85ff-4d07-a893-4b49fe814126": {
+      "name": "cam",
+      "channels": [
+        {
+          "url": "rtsp://192.168.1.14/videodevice",
+          "on_demand": true
         }
-      },
-      "name": "111111111"
+      ]
+    },
+    "6b8adb88-e146-47df-9a94-8e83b82d2822": {
+      "name": "local",
+      "channels": [
+        {
+          "url": "rtsp://82.165.66.87/test.mp4",
+          "on_demand": true
+        }
+      ]
+    },
+    "de242d81-9873-4f7b-894a-ea849a23316b": {
+      "name": "earth",
+      "channels": [
+        {
+          "url": "rtsp://192.168.1.14/files/file_example_MP4_480_1_5MG.mp4",
+          "on_demand": true
+        }
+      ]
     }
   }
 }
